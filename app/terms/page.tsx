@@ -1,183 +1,201 @@
-"use client"
-
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
-import { useEffect, useState } from "react"
-import { useLanguage } from "@/contexts/language-context"
+import Navigation from "@/components/navigation"
+import Footer from "@/components/footer"
 
 export default function TermsPage() {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
-      </div>
-    )
-  }
-
-  return <TermsContent />
-}
-
-function TermsContent() {
-  const { language } = useLanguage()
-
-  const content = {
-    en: {
-      title: "Terms of Service",
-      lastUpdated: "Last Updated: January 2025 | By Elmahrosa International",
-      sections: [
-        {
-          title: "1. Acceptance of Terms",
-          content:
-            "By accessing or using Elmahrosa Map of Pi (operated by Elmahrosa International), you agree to be bound by these Terms of Service. If you do not agree to these terms, please do not use our platform.",
-        },
-        {
-          title: "2. Marketplace Rules",
-          content:
-            "Sellers must complete verification before listing. All transactions are processed through Pi Network. Buyers must verify seller badges before purchase. Fraudulent activity will result in immediate account suspension.",
-        },
-        {
-          title: "3. Fees and Payments",
-          content:
-            "NFT Minting Fee: 1 Pi per mint. Marketplace Trade Fee: 2% per transaction. Verification Fee: 5 Pi (one-time). Premium Listing Fee: 10 Pi per month. Withdrawal Fee: 0.5 Pi per withdrawal. All fees are non-refundable.",
-        },
-        {
-          title: "4. Seller Verification",
-          content:
-            "Sellers must provide accurate business information. Verification includes identity check and business legitimacy. Verified badges are granted after successful verification. False information will result in permanent ban.",
-        },
-        {
-          title: "5. User Conduct",
-          content:
-            "Users must not engage in fraudulent transactions, impersonate other users, manipulate marketplace ratings, share account credentials, or violate local laws and regulations.",
-        },
-        {
-          title: "6. Intellectual Property",
-          content:
-            "The Elmahrosa Map of Pi brand, logo, and platform design are protected intellectual property. Users retain ownership of their content but grant us license to display it on the platform.",
-        },
-        {
-          title: "7. Dispute Resolution",
-          content:
-            "Marketplace disputes should be reported to founder dashboard. We will mediate disputes fairly based on transaction evidence. Final decisions are made by platform founders. Serious disputes may require legal arbitration.",
-        },
-        {
-          title: "8. Liability Limitations",
-          content:
-            "We are not responsible for: losses due to user error, third-party service failures, Pi Network downtime, or market value fluctuations. Use the platform at your own risk.",
-        },
-        {
-          title: "9. Account Termination",
-          content:
-            "We reserve the right to suspend or terminate accounts for: violation of these terms, fraudulent activity, repeated complaints, or security threats. Terminated users forfeit all platform benefits.",
-        },
-        {
-          title: "10. Changes to Terms",
-          content:
-            "We may modify these terms at any time. Users will be notified of significant changes. Continued use after changes constitutes acceptance of new terms.",
-        },
-        {
-          title: "11. Contact Information",
-          content:
-            "For questions about these terms, contact Elmahrosa at: support@elmahrosa.com, through the founder dashboard, or visit EMAPOFPI.TEOSEGYPT.COM. Our marketplace operates across Egypt, MENA, and Africa.",
-        },
-      ],
-    },
-    ar: {
-      title: "شروط الخدمة",
-      lastUpdated: "آخر تحديث: يناير 2025 | بواسطة المحروسة الدولية",
-      sections: [
-        {
-          title: "1. قبول الشروط",
-          content:
-            "من خلال الوصول إلى خريطة المحروسة لـ Pi (تشغلها المحروسة الدولية) أو استخدامها، فإنك توافق على الالتزام بشروط الخدمة هذه. إذا كنت لا توافق على هذه الشروط، يرجى عدم استخدام منصتنا.",
-        },
-        {
-          title: "2. قواعد السوق",
-          content:
-            "يجب على البائعين إكمال التحقق قبل الإدراج. تتم معالجة جميع المعاملات من خلال Pi Network. يجب على المشترين التحقق من شارات البائع قبل الشراء. ستؤدي الأنشطة الاحتيالية إلى تعليق الحساب فورًا.",
-        },
-        {
-          title: "3. الرسوم والمدفوعات",
-          content:
-            "رسوم سك NFT: 1 Pi لكل سك. رسوم تداول السوق: 2٪ لكل معاملة. رسوم التحقق: 5 Pi (لمرة واحدة). رسوم القائمة المميزة: 10 Pi شهريًا. رسوم السحب: 0.5 Pi لكل سحب. جميع الرسوم غير قابلة للاسترداد.",
-        },
-        {
-          title: "4. التحقق من البائع",
-          content:
-            "يجب على البائعين تقديم معلومات تجارية دقيقة. يتضمن التحقق فحص الهوية وشرعية العمل. تُمنح الشارات المعتمدة بعد التحقق الناجح. ستؤدي المعلومات الكاذبة إلى حظر دائم.",
-        },
-        {
-          title: "5. سلوك المستخدم",
-          content:
-            "يجب على المستخدمين عدم المشاركة في معاملات احتيالية، انتحال شخصية مستخدمين آخرين، التلاعب بتقييمات السوق، مشاركة بيانات اعتماد الحساب، أو انتهاك القوانين واللوائح المحلية.",
-        },
-        {
-          title: "6. الملكية الفكرية",
-          content:
-            "علامة Elmahrosa Map of Pi والشعار وتصميم المنصة هي ملكية فكرية محمية. يحتفظ المستخدمون بملكية محتواهم لكنهم يمنحوننا ترخيصًا لعرضه على المنصة.",
-        },
-        {
-          title: "7. حل النزاعات",
-          content:
-            "يجب الإبلاغ عن نزاعات السوق إلى لوحة تحكم المؤسس. سنتوسط في النزاعات بشكل عادل بناءً على أدلة المعاملات. يتم اتخاذ القرارات النهائية من قبل مؤسسي المنصة. قد تتطلب النزاعات الخطيرة التحكيم القانوني.",
-        },
-        {
-          title: "8. قيود المسؤولية",
-          content:
-            "نحن لسنا مسؤولين عن: الخسائر بسبب خطأ المستخدم، فشل خدمات الطرف الثالث، توقف Pi Network، أو تقلبات القيمة السوقية. استخدم المنصة على مسؤوليتك الخاصة.",
-        },
-        {
-          title: "9. إنهاء الحساب",
-          content:
-            "نحتفظ بالحق في تعليق أو إنهاء الحسابات بسبب: انتهاك هذه الشروط، نشاط احتيالي، شكاوى متكررة، أو تهديدات أمنية. يفقد المستخدمون المنتهية حساباتهم جميع مزايا المنصة.",
-        },
-        {
-          title: "10. التغييرات على الشروط",
-          content:
-            "قد نعدل هذه الشروط في أي وقت. سيتم إخطار المستخدمين بالتغييرات الهامة. يشكل الاستخدام المستمر بعد التغييرات قبولًا للشروط الجديدة.",
-        },
-        {
-          title: "11. معلومات الاتصال",
-          content:
-            "لأسئلة حول هذه الشروط، اتصل بالمحروسة على: support@elmahrosa.com، من خلال لوحة تحكم المؤسس، أو قم بزيارة EMAPOFPI.TEOSEGYPT.COM. يعمل سوقنا عبر مصر والشرق الأوسط وأفريقيا.",
-        },
-      ],
-    },
-  }
-
-  const text = content[language]
-
   return (
-    <div className="min-h-screen bg-background" dir={language === "ar" ? "rtl" : "ltr"}>
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          {language === "ar" ? "العودة للرئيسية" : "Back to Home"}
-        </Link>
+    <div className="min-h-screen bg-background">
+      <Navigation />
 
-        <div className="bg-card border border-border rounded-lg p-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">{text.title}</h1>
-          <p className="text-sm text-muted-foreground mb-8">{text.lastUpdated}</p>
+      <main className="container mx-auto px-4 py-8 mt-16 max-w-4xl">
+        <h1 className="text-4xl font-bold text-foreground mb-6">Terms of Service</h1>
+        <p className="text-sm text-muted-foreground mb-8">Last updated: {new Date().toLocaleDateString()}</p>
 
-          <div className="space-y-6">
-            {text.sections.map((section, index) => (
-              <div key={index}>
-                <h2 className="text-xl font-semibold text-foreground mb-3">{section.title}</h2>
-                <p className="text-muted-foreground leading-relaxed">{section.content}</p>
-              </div>
-            ))}
-          </div>
+        <div className="prose prose-sm max-w-none space-y-6 text-foreground">
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">1. Agreement to Terms</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              By accessing or using EMAPOFPI ("Platform"), you agree to be bound by these Terms of Service. If you do
+              not agree to these terms, you may not access or use the Platform.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">2. Platform Description</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              EMAPOFPI is the official seller onboarding platform for Pi Network in Egypt, MENA, and Africa. We provide
+              a civic-first marketplace that connects verified sellers with buyers using Pi cryptocurrency.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">3. Eligibility</h2>
+            <p className="text-muted-foreground leading-relaxed mb-3">To use this Platform, you must:</p>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li>Be at least 18 years of age</li>
+              <li>Have a valid Pi Network account</li>
+              <li>Provide accurate and complete registration information</li>
+              <li>Comply with all applicable laws and regulations</li>
+              <li>Not be prohibited from using the Platform under any applicable law</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">4. Seller Registration and Verification</h2>
+            <h3 className="text-xl font-medium mb-3">4.1 Petition Process</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              Sellers must submit a petition for onboarding. This petition-first approach ensures civic accountability
+              and community standards.
+            </p>
+
+            <h3 className="text-xl font-medium mb-3 mt-4">4.2 Verification Requirements</h3>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li>Identity verification through Pi Network</li>
+              <li>Business information and documentation</li>
+              <li>Compliance with local regulations</li>
+              <li>Agreement to platform standards and escrow protocols</li>
+            </ul>
+
+            <h3 className="text-xl font-medium mb-3 mt-4">4.3 Seller Obligations</h3>
+            <p className="text-muted-foreground leading-relaxed">Verified sellers must:</p>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li>Maintain accurate product listings and pricing</li>
+              <li>Fulfill orders in a timely manner</li>
+              <li>Use escrow system for all transactions</li>
+              <li>Respond to disputes professionally</li>
+              <li>Maintain a minimum trust score as determined by the platform</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">5. Escrow System</h2>
+            <h3 className="text-xl font-medium mb-3">5.1 How Escrow Works</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              All transactions must use our escrow system. Funds are held securely until the buyer confirms delivery.
+              The escrow process follows this flow:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground mt-3">
+              <li>
+                <strong>Initiated:</strong> Buyer and seller agree on terms
+              </li>
+              <li>
+                <strong>Funded:</strong> Buyer deposits Pi into escrow
+              </li>
+              <li>
+                <strong>Delivered:</strong> Seller ships and buyer receives goods
+              </li>
+              <li>
+                <strong>Released:</strong> Buyer confirms and funds transfer to seller
+              </li>
+            </ul>
+
+            <h3 className="text-xl font-medium mb-3 mt-4">5.2 Dispute Resolution</h3>
+            <p className="text-muted-foreground leading-relaxed">
+              If a dispute arises, either party may open a dispute case. Our team will review evidence and make a
+              binding decision within 14 days. Repeated disputes may affect trust scores.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">6. Trust Scoring System</h2>
+            <p className="text-muted-foreground leading-relaxed mb-3">Trust scores are calculated based on:</p>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li>Verification status</li>
+              <li>Trade volume and completion rate</li>
+              <li>On-time delivery performance</li>
+              <li>Dispute history</li>
+              <li>Cancellation rate</li>
+            </ul>
+            <p className="text-muted-foreground leading-relaxed mt-3">
+              Sellers with consistently low trust scores may have their access restricted or suspended.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">7. Prohibited Activities</h2>
+            <p className="text-muted-foreground leading-relaxed mb-3">You may not:</p>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li>Engage in fraudulent or deceptive practices</li>
+              <li>List illegal or prohibited goods or services</li>
+              <li>Manipulate trust scores or reviews</li>
+              <li>Circumvent the escrow system</li>
+              <li>Harass or abuse other users</li>
+              <li>Violate intellectual property rights</li>
+              <li>Use the platform for money laundering or illegal activities</li>
+              <li>Create multiple accounts to evade restrictions</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">8. Fees and Payments</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Platform fees may apply to transactions. Current fee structure will be displayed transparently before
+              transaction confirmation. All payments are processed in Pi cryptocurrency.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">9. Intellectual Property</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              All content on the Platform, including logos, trademarks, and software, is owned by EMAPOFPI or its
+              licensors. You may not use our intellectual property without permission.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">10. Limitation of Liability</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              EMAPOFPI acts as a platform facilitator. We are not responsible for the quality, safety, or legality of
+              items listed, the ability of sellers to complete transactions, or the ability of buyers to pay. To the
+              maximum extent permitted by law, we are not liable for indirect, incidental, or consequential damages.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">11. Indemnification</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              You agree to indemnify and hold EMAPOFPI harmless from any claims, damages, or expenses arising from your
+              use of the Platform or violation of these Terms.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">12. Termination</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              We may suspend or terminate your account at any time for violation of these Terms or for any other reason
+              we deem necessary to protect the Platform and its users.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">13. Governing Law</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              These Terms are governed by the laws of Egypt. Disputes will be resolved in Egyptian courts.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">14. Changes to Terms</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              We reserve the right to modify these Terms at any time. Continued use of the Platform after changes
+              constitutes acceptance of the new Terms.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">15. Contact Information</h2>
+            <div className="mt-3 p-4 bg-muted rounded-lg">
+              <p className="text-foreground">
+                <strong>Email:</strong> legal@emapofpi.com
+              </p>
+              <p className="text-foreground">
+                <strong>Address:</strong> EMAPOFPI, Cairo, Egypt
+              </p>
+            </div>
+          </section>
         </div>
-      </div>
+      </main>
+
+      <Footer />
     </div>
   )
 }

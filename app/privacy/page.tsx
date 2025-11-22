@@ -1,163 +1,168 @@
-"use client"
-
-import { ArrowLeft } from "lucide-react"
-import Link from "next/link"
-import { useEffect, useState } from "react"
-import { useLanguage } from "@/contexts/language-context"
+import Navigation from "@/components/navigation"
+import Footer from "@/components/footer"
 
 export default function PrivacyPage() {
-  const [mounted, setMounted] = useState(false)
-
-  useEffect(() => {
-    setMounted(true)
-  }, [])
-
-  if (!mounted) {
-    return (
-      <div className="min-h-screen bg-background flex items-center justify-center">
-        <div className="animate-pulse text-muted-foreground">Loading...</div>
-      </div>
-    )
-  }
-
-  return <PrivacyContent />
-}
-
-function PrivacyContent() {
-  const { language } = useLanguage()
-
-  const content = {
-    en: {
-      title: "Privacy Policy",
-      lastUpdated: "Last Updated: January 2025 | By Elmahrosa International",
-      sections: [
-        {
-          title: "1. Information We Collect",
-          content:
-            "Elmahrosa Map of Pi collects information you provide directly to us, including your Pi Network username, wallet address, and marketplace activity. We also collect transaction data to verify sellers and process payments securely across Egypt, MENA, and Africa.",
-        },
-        {
-          title: "2. How We Use Your Information",
-          content:
-            "Your information is used to: authenticate your identity via Pi Network, process marketplace transactions, verify seller badges and credentials, maintain platform security, improve our services, and comply with legal obligations.",
-        },
-        {
-          title: "3. Data Sharing",
-          content:
-            "We do not sell your personal information. We share data only with: Pi Network (for authentication and payments), verified sellers (transaction details only), and legal authorities (when required by law).",
-        },
-        {
-          title: "4. Data Security",
-          content:
-            "We implement industry-standard security measures including encrypted data transmission, secure server infrastructure, regular security audits, and row-level security policies in our database.",
-        },
-        {
-          title: "5. Your Rights",
-          content:
-            "You have the right to: access your personal data, request data deletion, opt-out of marketing communications, and withdraw consent at any time. Contact us at support@elmahrosa.com to exercise these rights.",
-        },
-        {
-          title: "6. Cookies and Tracking",
-          content:
-            "We use essential cookies for authentication and session management. We do not use third-party tracking cookies. You can disable cookies in your browser settings.",
-        },
-        {
-          title: "7. International Data Transfers",
-          content:
-            "Your data may be processed in Egypt, MENA region, and other locations where our service providers operate. We ensure adequate data protection measures are in place.",
-        },
-        {
-          title: "8. Changes to This Policy",
-          content:
-            "We may update this privacy policy periodically. We will notify users of significant changes via email or platform notification.",
-        },
-        {
-          title: "9. Contact Us",
-          content:
-            "For privacy questions or concerns, contact Elmahrosa at: support@elmahrosa.com, visit our founder dashboard, or reach us at EMAPOFPI.TEOSEGYPT.COM",
-        },
-      ],
-    },
-    ar: {
-      title: "سياسة الخصوصية",
-      lastUpdated: "آخر تحديث: يناير 2025 | بواسطة المحروسة الدولية",
-      sections: [
-        {
-          title: "1. المعلومات التي نجمعها",
-          content:
-            "تجمع خريطة المحروسة لـ Pi المعلومات التي تقدمها لنا مباشرة، بما في ذلك اسم مستخدم Pi Network الخاص بك وعنوان المحفظة ونشاط السوق. نجمع أيضًا بيانات المعاملات للتحقق من البائعين ومعالجة المدفوعات بشكل آمن عبر مصر والشرق الأوسط وأفريقيا.",
-        },
-        {
-          title: "2. كيفية استخدام معلوماتك",
-          content:
-            "تُستخدم معلوماتك في: المصادقة على هويتك عبر Pi Network، معالجة معاملات السوق، التحقق من شارات وبيانات اعتماد البائع، الحفاظ على أمان المنصة، تحسين خدماتنا، والامتثال للالتزامات القانونية.",
-        },
-        {
-          title: "3. مشاركة البيانات",
-          content:
-            "لا نبيع معلوماتك الشخصية. نشارك البيانات فقط مع: Pi Network (للمصادقة والمدفوعات)، البائعين المعتمدين (تفاصيل المعاملات فقط)، والسلطات القانونية (عند الطلب القانوني).",
-        },
-        {
-          title: "4. أمن البيانات",
-          content:
-            "نطبق إجراءات أمان معيارية في الصناعة بما في ذلك نقل البيانات المشفرة، البنية التحتية الآمنة للخادم، عمليات التدقيق الأمني المنتظمة، وسياسات الأمان على مستوى الصف في قاعدة البيانات.",
-        },
-        {
-          title: "5. حقوقك",
-          content:
-            "لديك الحق في: الوصول إلى بياناتك الشخصية، طلب حذف البيانات، إلغاء الاشتراك في الاتصالات التسويقية، وسحب الموافقة في أي وقت. اتصل بنا على support@elmahrosa.com لممارسة هذه الحقوق.",
-        },
-        {
-          title: "6. ملفات تعريف الارتباط والتتبع",
-          content:
-            "نستخدم ملفات تعريف الارتباط الأساسية للمصادقة وإدارة الجلسة. لا نستخدم ملفات تعريف ارتباط التتبع من طرف ثالث. يمكنك تعطيل ملفات تعريف الارتباط في إعدادات المتصفح.",
-        },
-        {
-          title: "7. نقل البيانات الدولي",
-          content:
-            "قد تتم معالجة بياناتك في مصر ومنطقة الشرق الأوسط وشمال أفريقيا ومواقع أخرى حيث يعمل مزودو الخدمة لدينا. نضمن وجود تدابير كافية لحماية البيانات.",
-        },
-        {
-          title: "8. التغييرات على هذه السياسة",
-          content:
-            "قد نقوم بتحديث سياسة الخصوصية هذه بشكل دوري. سنخطر المستخدمين بالتغييرات الهامة عبر البريد الإلكتروني أو إشعار المنصة.",
-        },
-        {
-          title: "9. اتصل بنا",
-          content:
-            "لأسئلة أو مخاوف الخصوصية، اتصل بالمحروسة على: support@elmahrosa.com، قم بزيارة لوحة تحكم المؤسس، أو تواصل معنا على EMAPOFPI.TEOSEGYPT.COM",
-        },
-      ],
-    },
-  }
-
-  const text = content[language]
-
   return (
-    <div className="min-h-screen bg-background" dir={language === "ar" ? "rtl" : "ltr"}>
-      <div className="container mx-auto px-4 py-8 max-w-4xl">
-        <Link
-          href="/"
-          className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground mb-6 transition-colors"
-        >
-          <ArrowLeft className="h-4 w-4" />
-          {language === "ar" ? "العودة للرئيسية" : "Back to Home"}
-        </Link>
+    <div className="min-h-screen bg-background">
+      <Navigation />
 
-        <div className="bg-card border border-border rounded-lg p-8">
-          <h1 className="text-3xl font-bold text-foreground mb-2">{text.title}</h1>
-          <p className="text-sm text-muted-foreground mb-8">{text.lastUpdated}</p>
+      <main className="container mx-auto px-4 py-8 mt-16 max-w-4xl">
+        <h1 className="text-4xl font-bold text-foreground mb-6">Privacy Policy</h1>
+        <p className="text-sm text-muted-foreground mb-8">Last updated: {new Date().toLocaleDateString()}</p>
 
-          <div className="space-y-6">
-            {text.sections.map((section, index) => (
-              <div key={index}>
-                <h2 className="text-xl font-semibold text-foreground mb-3">{section.title}</h2>
-                <p className="text-muted-foreground leading-relaxed">{section.content}</p>
-              </div>
-            ))}
-          </div>
+        <div className="prose prose-sm max-w-none space-y-6 text-foreground">
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">1. Introduction</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              EMAPOFPI ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how
+              we collect, use, disclose, and safeguard your information when you use our platform, the official seller
+              onboarding platform for Pi Network in Egypt, MENA, and Africa.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">2. Information We Collect</h2>
+            <h3 className="text-xl font-medium mb-3">2.1 Personal Information</h3>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li>Name and contact information (email, phone number)</li>
+              <li>Business information (business name, description, location)</li>
+              <li>Pi Network user ID and wallet address</li>
+              <li>Verification documents (as required for seller onboarding)</li>
+            </ul>
+
+            <h3 className="text-xl font-medium mb-3 mt-4">2.2 Transaction Information</h3>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li>Escrow transaction details</li>
+              <li>Trade history and performance metrics</li>
+              <li>Trust score calculations and dispute records</li>
+            </ul>
+
+            <h3 className="text-xl font-medium mb-3 mt-4">2.3 Technical Information</h3>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li>Device information and IP address</li>
+              <li>Browser type and version</li>
+              <li>Usage data and analytics</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">3. How We Use Your Information</h2>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li>
+                <strong>Seller Verification:</strong> To verify your identity and business credentials
+              </li>
+              <li>
+                <strong>Transaction Processing:</strong> To facilitate escrow transactions and payments
+              </li>
+              <li>
+                <strong>Trust Scoring:</strong> To calculate and display trust scores based on trading history
+              </li>
+              <li>
+                <strong>Communication:</strong> To send notifications about transactions, disputes, and platform updates
+              </li>
+              <li>
+                <strong>Security:</strong> To detect and prevent fraud, abuse, and security threats
+              </li>
+              <li>
+                <strong>Analytics:</strong> To improve our platform and user experience
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">4. Information Sharing</h2>
+            <p className="text-muted-foreground leading-relaxed mb-3">
+              We follow a principle of minimal data sharing. We do not sell your personal information to third parties.
+              We may share information only in the following circumstances:
+            </p>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li>
+                <strong>With Other Users:</strong> Your public profile information is visible to marketplace users
+              </li>
+              <li>
+                <strong>Pi Network:</strong> User verification data as required by Pi Network protocols
+              </li>
+              <li>
+                <strong>Legal Requirements:</strong> When required by law or to protect rights and safety
+              </li>
+              <li>
+                <strong>Service Providers:</strong> With trusted third-party services that help operate our platform
+                (under strict confidentiality agreements)
+              </li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">5. Data Security</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              We implement industry-standard security measures to protect your information, including encryption, secure
+              authentication, and regular security audits. However, no method of transmission over the internet is 100%
+              secure, and we cannot guarantee absolute security.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">6. Your Rights</h2>
+            <p className="text-muted-foreground leading-relaxed mb-3">You have the right to:</p>
+            <ul className="list-disc pl-6 space-y-2 text-muted-foreground">
+              <li>Access your personal information</li>
+              <li>Correct inaccurate information</li>
+              <li>Request deletion of your information (subject to legal and contractual obligations)</li>
+              <li>Object to processing of your information</li>
+              <li>Export your data in a portable format</li>
+            </ul>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">7. Data Retention</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              We retain your information for as long as necessary to provide our services and comply with legal
+              obligations. Transaction records and dispute history are retained for audit and compliance purposes.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">8. International Data Transfers</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Your information may be transferred to and processed in countries outside your country of residence. We
+              ensure appropriate safeguards are in place for such transfers.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">9. Children's Privacy</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              Our platform is not intended for users under 18 years of age. We do not knowingly collect information from
+              children.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">10. Changes to This Policy</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              We may update this Privacy Policy periodically. We will notify you of material changes via email or
+              platform notification.
+            </p>
+          </section>
+
+          <section>
+            <h2 className="text-2xl font-semibold mb-4">11. Contact Us</h2>
+            <p className="text-muted-foreground leading-relaxed">
+              For privacy-related questions or concerns, contact us at:
+            </p>
+            <div className="mt-3 p-4 bg-muted rounded-lg">
+              <p className="text-foreground">
+                <strong>Email:</strong> privacy@emapofpi.com
+              </p>
+              <p className="text-foreground">
+                <strong>Address:</strong> EMAPOFPI, Cairo, Egypt
+              </p>
+            </div>
+          </section>
         </div>
-      </div>
+      </main>
+
+      <Footer />
     </div>
   )
 }

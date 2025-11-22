@@ -1,450 +1,562 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
-import { useLanguage } from "@/contexts/language-context"
-import { LanguageProvider } from "@/contexts/language-context"
+import { useState } from "react"
+import Navigation from "@/components/navigation"
+import Footer from "@/components/footer"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
-import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Settings, DollarSign, Users, TrendingUp, Shield, Lock, AlertCircle, CheckCircle2 } from "lucide-react"
-import { loginFounder, logout, onAuthStateChange, type AuthUser } from "@/lib/auth"
-import { MARKETPLACE_FEES } from "@/lib/fees"
-import { updateFee, getCurrentFees } from "@/lib/fee-manager"
+import { useLanguage } from "@/contexts/language-context"
+import {
+  BarChart3,
+  Shield,
+  Users,
+  TrendingUp,
+  AlertTriangle,
+  CheckCircle,
+  Globe,
+  Sparkles,
+  FileText,
+  DollarSign,
+  MessageSquare,
+  Settings,
+} from "lucide-react"
 
-interface FeeSettings {
-  NFT_MINTING: number
-  TRADE_COMMISSION: number
-  SELLER_VERIFICATION: number
-  PREMIUM_LISTING: number
-  WITHDRAWAL_FEE: number
-}
+export default function FounderDashboardPage() {
+  const { t } = useLanguage()
+  const [petitionName, setPetitionName] = useState("")
+  const [petitionPurpose, setPetitionPurpose] = useState("")
+  const [aiResponse, setAiResponse] = useState("")
+  const [loading, setLoading] = useState(false)
 
-function FounderDashboardContent() {
-  const { t, language, setLanguage } = useLanguage()
-  const router = useRouter()
-  const [currentUser, setCurrentUser] = useState<AuthUser | null>(null)
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [loginError, setLoginError] = useState("")
-  const [loginSuccess, setLoginSuccess] = useState(false)
-
-  const [fees, setFees] = useState<FeeSettings>({
-    NFT_MINTING: MARKETPLACE_FEES.NFT_MINTING.amount,
-    TRADE_COMMISSION: MARKETPLACE_FEES.TRADE_COMMISSION.amount,
-    SELLER_VERIFICATION: MARKETPLACE_FEES.SELLER_VERIFICATION.amount,
-    PREMIUM_LISTING: MARKETPLACE_FEES.PREMIUM_LISTING.amount,
-    WITHDRAWAL_FEE: MARKETPLACE_FEES.WITHDRAWAL_FEE.amount,
-  })
-  const [editedFees, setEditedFees] = useState<FeeSettings>(fees)
-  const [isEditing, setIsEditing] = useState(false)
-  const [saveStatus, setSaveStatus] = useState<"idle" | "saving" | "success" | "error">("idle")
-
-  useEffect(() => {
-    const loadFees = async () => {
-      const currentFees = await getCurrentFees()
-      const loadedFees = {
-        NFT_MINTING: currentFees.NFT_MINTING.amount,
-        TRADE_COMMISSION: currentFees.TRADE_COMMISSION.amount,
-        SELLER_VERIFICATION: currentFees.SELLER_VERIFICATION.amount,
-        PREMIUM_LISTING: currentFees.PREMIUM_LISTING.amount,
-        WITHDRAWAL_FEE: currentFees.WITHDRAWAL_FEE.amount,
-      }
-      setFees(loadedFees)
-      setEditedFees(loadedFees)
-    }
-    loadFees()
-  }, [])
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChange((user) => {
-      setCurrentUser(user)
-      if (user && user.role !== "founder") {
-        setLoginError("Unauthorized: Founder access only")
-        setCurrentUser(null)
-      }
-    })
-    return unsubscribe
-  }, [])
-
-  const [stats] = useState({
-    totalSellers: 127,
-    activeBuyers: 543,
-    totalTransactions: 1234,
-    revenue: 156.75,
-    pendingVerifications: 8,
-    verifiedSellers: 119,
-  })
-
-  const handleLogin = async () => {
-    setLoginError("")
-    setLoginSuccess(false)
-
-    if (!email || !password) {
-      setLoginError(t("pleaseEnterCredentials") || "Please enter email and password")
-      return
-    }
-
-    const user = await loginFounder(email, password)
-
-    if (user) {
-      setCurrentUser(user)
-      setLoginSuccess(true)
-      setLoginError("")
-    } else {
-      setLoginError(t("invalidCredentials") || "Invalid credentials or unauthorized access")
-    }
+  // Mock platform metrics
+  const metrics = {
+    totalTransactions: 1247,
+    totalVolume: 45823,
+    activeCountries: 12,
+    averageDisputeTime: 18,
+    escrowReleaseRate: 96.5,
+    activeSellers: 342,
+    verifiedSellers: 289,
+    pendingVerifications: 23,
+    activeDisputes: 8,
   }
 
-  const handleSaveFees = async () => {
-    if (!currentUser) return
-
-    setSaveStatus("saving")
-
+  const handlePetitionAI = async () => {
+    setLoading(true)
     try {
-      const updates = Object.entries(editedFees).filter(([key, value]) => fees[key as keyof FeeSettings] !== value)
-
-      for (const [feeType, newAmount] of updates) {
-        await updateFee(feeType as keyof typeof MARKETPLACE_FEES, newAmount, currentUser.id)
-      }
-
-      setFees(editedFees)
-      setIsEditing(false)
-      setSaveStatus("success")
-      setTimeout(() => setSaveStatus("idle"), 3000)
+      const response = await fetch("/api/petition-ai", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: petitionName, purpose: petitionPurpose }),
+      })
+      const data = await response.json()
+      setAiResponse(data.petition)
     } catch (error) {
-      setSaveStatus("error")
-      setTimeout(() => setSaveStatus("idle"), 3000)
+      console.error("Petition AI error:", error)
     }
+    setLoading(false)
   }
 
-  const handleCancelEdit = () => {
-    setEditedFees(fees)
-    setIsEditing(false)
-    setSaveStatus("idle")
+  const handleComplianceCheck = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch("/api/compliance-bot", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          repoName: "Elmahrosa-Map-of-PI",
+          files: ["README.md", "SECURITY.md", "CONTRIBUTING.md", ".github/workflows/ci.yml"],
+        }),
+      })
+      const data = await response.json()
+      setAiResponse(JSON.stringify(data, null, 2))
+    } catch (error) {
+      console.error("Compliance check error:", error)
+    }
+    setLoading(false)
   }
 
-  const handleLogout = async () => {
-    await logout()
-    setCurrentUser(null)
-    setEmail("")
-    setPassword("")
-  }
-
-  if (!currentUser) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple to-navy p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="space-y-2 text-center">
-            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary/10">
-              <Shield className="h-8 w-8 text-primary" />
-            </div>
-            <CardTitle className="text-2xl font-bold">{t("founderAccess") || "Founder Access"}</CardTitle>
-            <CardDescription>{t("founderLoginDesc") || "Secure login for Elmahrosa founders"}</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {loginError && (
-              <Alert variant="destructive">
-                <AlertCircle className="h-4 w-4" />
-                <AlertDescription>{loginError}</AlertDescription>
-              </Alert>
-            )}
-
-            {loginSuccess && (
-              <Alert className="border-verified bg-verified/10">
-                <CheckCircle2 className="h-4 w-4 text-verified" />
-                <AlertDescription className="text-verified">Login successful</AlertDescription>
-              </Alert>
-            )}
-
-            <div className="space-y-2">
-              <Label htmlFor="email">{t("email") || "Email"}</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="founder@elmahrosa.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="password">{t("password") || "Password"}</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && handleLogin()}
-              />
-            </div>
-
-            <Button onClick={handleLogin} className="w-full" size="lg">
-              <Lock className="mr-2 h-4 w-4" />
-              {t("loginFounder") || "Login as Founder"}
-            </Button>
-
-            <p className="text-xs text-center text-muted-foreground mt-4">
-              {t("defaultPassword") || "Default password: elmahrosa2025"}
-            </p>
-          </CardContent>
-        </Card>
-      </div>
-    )
+  const handleTreasuryAudit = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch("/api/treasury-auditor", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          feesCollected: 1234.56,
+          escrows: 342,
+          disputesResolved: 28,
+        }),
+      })
+      const data = await response.json()
+      setAiResponse(JSON.stringify(data, null, 2))
+    } catch (error) {
+      console.error("Treasury audit error:", error)
+    }
+    setLoading(false)
   }
 
   return (
-    <div className="min-h-screen bg-background p-4 md:p-8">
-      <div className="mx-auto max-w-6xl space-y-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">{t("founderDashboard") || "Founder Dashboard"}</h1>
-            <p className="text-muted-foreground mt-1">
-              {t("welcomeBack") || "Welcome back"}, {currentUser.email}
-            </p>
+    <div className="min-h-screen bg-background">
+      <Navigation />
+
+      <main className="container mx-auto px-4 py-8 mt-16">
+        <div className="mb-8">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-12 h-12 rounded-full bg-primary flex items-center justify-center">
+              <Shield className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-foreground">Founder Dashboard</h1>
+              <p className="text-muted-foreground">Platform governance, metrics, and AI tools</p>
+            </div>
           </div>
-          <Button variant="outline" onClick={handleLogout}>
-            {t("logout") || "Logout"}
-          </Button>
         </div>
 
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("totalSellers") || "Total Sellers"}</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Total Volume</CardTitle>
+              <TrendingUp className="h-4 w-4 text-primary" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.totalSellers}</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                <Badge variant="secondary" className="bg-verified/10 text-verified">
-                  {stats.verifiedSellers} {t("verified") || "verified"}
-                </Badge>
-              </p>
+              <div className="text-2xl font-bold text-primary">{metrics.totalVolume.toLocaleString()} π</div>
+              <p className="text-xs text-muted-foreground mt-1">{metrics.totalTransactions} transactions</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("activeBuyers") || "Active Buyers"}</CardTitle>
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Active Sellers</CardTitle>
+              <Users className="h-4 w-4 text-blue-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.activeBuyers}</div>
-              <p className="text-xs text-muted-foreground mt-1">+12% {t("fromLastMonth") || "from last month"}</p>
+              <div className="text-2xl font-bold text-blue-600">{metrics.activeSellers}</div>
+              <p className="text-xs text-muted-foreground mt-1">{metrics.verifiedSellers} verified</p>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{t("revenue") || "Revenue (Pi)"}</CardTitle>
-              <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Escrow Release Rate</CardTitle>
+              <CheckCircle className="h-4 w-4 text-green-600" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{stats.revenue.toFixed(2)} π</div>
-              <p className="text-xs text-muted-foreground mt-1">
-                {stats.totalTransactions} {t("transactions") || "transactions"}
-              </p>
+              <div className="text-2xl font-bold text-green-600">{metrics.escrowReleaseRate}%</div>
+              <p className="text-xs text-muted-foreground mt-1">Avg {metrics.averageDisputeTime}h dispute time</p>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between pb-2">
+              <CardTitle className="text-sm font-medium">Active Countries</CardTitle>
+              <Globe className="h-4 w-4 text-orange-600" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold text-orange-600">{metrics.activeCountries}</div>
+              <p className="text-xs text-muted-foreground mt-1">Egypt, MENA, Africa</p>
             </CardContent>
           </Card>
         </div>
 
-        <Tabs defaultValue="fees" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="fees">
-              <Settings className="mr-2 h-4 w-4" />
-              {t("manageFees") || "Manage Fees"}
+        <Tabs defaultValue="overview" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2">
+            <TabsTrigger value="overview" className="flex items-center gap-2">
+              <BarChart3 className="h-4 w-4" />
+              <span className="hidden md:inline">Overview</span>
+            </TabsTrigger>
+            <TabsTrigger value="ai-tools" className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4" />
+              <span className="hidden md:inline">AI Tools</span>
+            </TabsTrigger>
+            <TabsTrigger value="governance" className="flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              <span className="hidden md:inline">Governance</span>
+            </TabsTrigger>
+            <TabsTrigger value="management" className="flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              <span className="hidden md:inline">Management</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="fees" className="space-y-4">
-            <Card>
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <CardTitle>{t("marketplaceFees") || "Marketplace Fees"}</CardTitle>
-                    <CardDescription>
-                      {t("manageFeeStructure") || "Manage fee structure for platform operations"}
-                    </CardDescription>
+          <TabsContent value="overview" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Recent Activity</CardTitle>
+                  <CardDescription>Latest platform events</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {[
+                      { type: "seller", name: "Ahmed M.", action: "verified", time: "2 hours ago" },
+                      { type: "escrow", name: "Escrow #1247", action: "released", time: "4 hours ago" },
+                      { type: "dispute", name: "Dispute #89", action: "resolved", time: "6 hours ago" },
+                      { type: "seller", name: "Fatima K.", action: "registered", time: "8 hours ago" },
+                    ].map((activity, i) => (
+                      <div key={i} className="flex items-center justify-between p-3 border border-border rounded-lg">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                            {activity.type === "seller" && <Users className="h-4 w-4 text-primary" />}
+                            {activity.type === "escrow" && <DollarSign className="h-4 w-4 text-green-600" />}
+                            {activity.type === "dispute" && <AlertTriangle className="h-4 w-4 text-orange-600" />}
+                          </div>
+                          <div>
+                            <p className="text-sm font-medium">{activity.name}</p>
+                            <p className="text-xs text-muted-foreground">{activity.action}</p>
+                          </div>
+                        </div>
+                        <span className="text-xs text-muted-foreground">{activity.time}</span>
+                      </div>
+                    ))}
                   </div>
-                  {!isEditing ? (
-                    <Button onClick={() => setIsEditing(true)} variant="outline">
-                      {t("edit") || "Edit"}
-                    </Button>
-                  ) : (
-                    <div className="flex gap-2">
-                      <Button onClick={handleSaveFees} disabled={saveStatus === "saving"}>
-                        {saveStatus === "saving" ? t("saving") || "Saving..." : t("save") || "Save"}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Pending Actions</CardTitle>
+                  <CardDescription>Requires founder attention</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="p-4 border border-orange-500/20 bg-orange-500/5 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge variant="outline" className="border-orange-500 text-orange-600">
+                          Verification
+                        </Badge>
+                        <span className="text-sm font-medium">{metrics.pendingVerifications}</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3">Seller verifications pending</p>
+                      <Button size="sm" variant="outline" className="w-full bg-transparent">
+                        Review Sellers
                       </Button>
-                      <Button onClick={handleCancelEdit} variant="outline">
-                        {t("cancel") || "Cancel"}
+                    </div>
+
+                    <div className="p-4 border border-red-500/20 bg-red-500/5 rounded-lg">
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge variant="outline" className="border-red-500 text-red-600">
+                          Dispute
+                        </Badge>
+                        <span className="text-sm font-medium">{metrics.activeDisputes}</span>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-3">Active disputes to resolve</p>
+                      <Button size="sm" variant="outline" className="w-full bg-transparent">
+                        Review Disputes
                       </Button>
                     </div>
-                  )}
-                </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
-                {saveStatus === "success" && (
-                  <Alert className="mt-4 border-verified bg-verified/10">
-                    <CheckCircle2 className="h-4 w-4 text-verified" />
-                    <AlertDescription className="text-verified">
-                      {t("feesSaved") || "Fees updated successfully"}
-                    </AlertDescription>
-                  </Alert>
-                )}
+          <TabsContent value="ai-tools" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Sparkles className="h-5 w-5 text-primary" />
+                    Petition AI
+                  </CardTitle>
+                  <CardDescription>Generate civic-first onboarding petitions</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Seller Name</label>
+                    <Input
+                      placeholder="Enter seller name"
+                      value={petitionName}
+                      onChange={(e) => setPetitionName(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Purpose</label>
+                    <Textarea
+                      placeholder="Describe the purpose of this petition"
+                      value={petitionPurpose}
+                      onChange={(e) => setPetitionPurpose(e.target.value)}
+                      rows={3}
+                    />
+                  </div>
+                  <Button onClick={handlePetitionAI} disabled={loading} className="w-full">
+                    {loading ? "Generating..." : "Generate Petition"}
+                  </Button>
+                </CardContent>
+              </Card>
 
-                {saveStatus === "error" && (
-                  <Alert variant="destructive" className="mt-4">
-                    <AlertCircle className="h-4 w-4" />
-                    <AlertDescription>{t("feesError") || "Failed to update fees. Please try again."}</AlertDescription>
-                  </Alert>
-                )}
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <FileText className="h-5 w-5 text-blue-600" />
+                    Compliance Bot
+                  </CardTitle>
+                  <CardDescription>Check repository compliance status</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Automatically checks for required files: README, SECURITY, CONTRIBUTING, CI/CD workflows
+                  </p>
+                  <Button
+                    onClick={handleComplianceCheck}
+                    disabled={loading}
+                    className="w-full bg-transparent"
+                    variant="outline"
+                  >
+                    {loading ? "Checking..." : "Run Compliance Check"}
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <DollarSign className="h-5 w-5 text-green-600" />
+                    Treasury Auditor
+                  </CardTitle>
+                  <CardDescription>Generate transparent treasury reports</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <div className="grid grid-cols-2 gap-4 text-sm">
                     <div>
-                      <Label htmlFor="nft-minting">{MARKETPLACE_FEES.NFT_MINTING.name}</Label>
-                      <p className="text-sm text-muted-foreground">{MARKETPLACE_FEES.NFT_MINTING.description}</p>
+                      <p className="text-muted-foreground">Fees Collected</p>
+                      <p className="font-medium">1,234.56 π</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="nft-minting"
-                        type="number"
-                        step="0.1"
-                        className="w-24"
-                        value={isEditing ? editedFees.NFT_MINTING : fees.NFT_MINTING}
-                        onChange={(e) =>
-                          setEditedFees((prev) => ({ ...prev, NFT_MINTING: Number.parseFloat(e.target.value) || 0 }))
-                        }
-                        disabled={!isEditing}
-                      />
-                      <span className="text-sm text-muted-foreground">π</span>
+                    <div>
+                      <p className="text-muted-foreground">Active Escrows</p>
+                      <p className="font-medium">342</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Disputes Resolved</p>
+                      <p className="font-medium">28</p>
+                    </div>
+                    <div>
+                      <p className="text-muted-foreground">Release Rate</p>
+                      <p className="font-medium">96.5%</p>
                     </div>
                   </div>
+                  <Button
+                    onClick={handleTreasuryAudit}
+                    disabled={loading}
+                    className="w-full bg-transparent"
+                    variant="outline"
+                  >
+                    {loading ? "Auditing..." : "Generate Audit Report"}
+                  </Button>
+                </CardContent>
+              </Card>
 
-                  <Separator />
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <MessageSquare className="h-5 w-5 text-purple-600" />
+                    Mythic Storyteller
+                  </CardTitle>
+                  <CardDescription>Document platform evolution</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">
+                    Creates narrative logs for major changes, deployments, and milestones in the resurrection chapter.
+                  </p>
+                  <Button variant="outline" className="w-full bg-transparent">
+                    View Chapter Log
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="trade-commission">{MARKETPLACE_FEES.TRADE_COMMISSION.name}</Label>
-                      <p className="text-sm text-muted-foreground">{MARKETPLACE_FEES.TRADE_COMMISSION.description}</p>
+            {aiResponse && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>AI Response</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <pre className="p-4 bg-muted rounded-lg text-sm overflow-x-auto whitespace-pre-wrap">
+                    {aiResponse}
+                  </pre>
+                </CardContent>
+              </Card>
+            )}
+          </TabsContent>
+
+          <TabsContent value="governance" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Trust Score Distribution</CardTitle>
+                  <CardDescription>Seller trust score breakdown</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {[
+                      { range: "90-100", count: 89, color: "bg-green-600" },
+                      { range: "70-89", count: 142, color: "bg-blue-600" },
+                      { range: "50-69", count: 78, color: "bg-yellow-600" },
+                      { range: "0-49", count: 33, color: "bg-red-600" },
+                    ].map((tier) => (
+                      <div key={tier.range}>
+                        <div className="flex items-center justify-between mb-2">
+                          <span className="text-sm font-medium">Score {tier.range}</span>
+                          <span className="text-sm text-muted-foreground">{tier.count} sellers</span>
+                        </div>
+                        <div className="w-full bg-muted rounded-full h-2">
+                          <div
+                            className={`${tier.color} h-2 rounded-full`}
+                            style={{ width: `${(tier.count / metrics.activeSellers) * 100}%` }}
+                          />
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Escrow Performance</CardTitle>
+                  <CardDescription>Transaction safety metrics</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between p-3 border border-border rounded-lg">
+                      <span className="text-sm">Successful Releases</span>
+                      <span className="text-sm font-bold text-green-600">96.5%</span>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="trade-commission"
-                        type="number"
-                        step="0.1"
-                        className="w-24"
-                        value={isEditing ? editedFees.TRADE_COMMISSION : fees.TRADE_COMMISSION}
-                        onChange={(e) =>
-                          setEditedFees((prev) => ({
-                            ...prev,
-                            TRADE_COMMISSION: Number.parseFloat(e.target.value) || 0,
-                          }))
-                        }
-                        disabled={!isEditing}
-                      />
-                      <span className="text-sm text-muted-foreground">%</span>
+                    <div className="flex items-center justify-between p-3 border border-border rounded-lg">
+                      <span className="text-sm">Dispute Rate</span>
+                      <span className="text-sm font-bold text-orange-600">2.8%</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 border border-border rounded-lg">
+                      <span className="text-sm">Refund Rate</span>
+                      <span className="text-sm font-bold text-blue-600">0.7%</span>
+                    </div>
+                    <div className="flex items-center justify-between p-3 border border-border rounded-lg">
+                      <span className="text-sm">Avg Resolution Time</span>
+                      <span className="text-sm font-bold text-primary">{metrics.averageDisputeTime}h</span>
                     </div>
                   </div>
+                </CardContent>
+              </Card>
 
-                  <Separator />
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle>Regional Coverage</CardTitle>
+                  <CardDescription>Active sellers by region</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    {[
+                      { region: "Egypt", sellers: 234, percent: 68 },
+                      { region: "MENA", sellers: 78, percent: 23 },
+                      { region: "Africa", sellers: 30, percent: 9 },
+                    ].map((region) => (
+                      <div key={region.region} className="p-4 border border-border rounded-lg">
+                        <div className="flex items-center gap-2 mb-3">
+                          <Globe className="h-4 w-4 text-primary" />
+                          <span className="font-medium">{region.region}</span>
+                        </div>
+                        <div className="text-2xl font-bold text-primary mb-1">{region.sellers}</div>
+                        <div className="text-sm text-muted-foreground">{region.percent}% of total</div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </TabsContent>
 
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="seller-verification">{MARKETPLACE_FEES.SELLER_VERIFICATION.name}</Label>
-                      <p className="text-sm text-muted-foreground">
-                        {MARKETPLACE_FEES.SELLER_VERIFICATION.description}
-                      </p>
+          <TabsContent value="management" className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <Card>
+                <CardHeader>
+                  <CardTitle>System Health</CardTitle>
+                  <CardDescription>Platform status and uptime</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-4">
+                    {[
+                      { service: "API Server", status: "operational", uptime: "99.9%" },
+                      { service: "Database", status: "operational", uptime: "99.8%" },
+                      { service: "Escrow Service", status: "operational", uptime: "99.7%" },
+                      { service: "Pi SDK Auth", status: "operational", uptime: "99.9%" },
+                    ].map((service) => (
+                      <div
+                        key={service.service}
+                        className="flex items-center justify-between p-3 border border-border rounded-lg"
+                      >
+                        <div className="flex items-center gap-3">
+                          <div className="w-2 h-2 rounded-full bg-green-600" />
+                          <span className="text-sm font-medium">{service.service}</span>
+                        </div>
+                        <div className="text-right">
+                          <Badge variant="outline" className="border-green-600 text-green-600">
+                            {service.status}
+                          </Badge>
+                          <p className="text-xs text-muted-foreground mt-1">{service.uptime}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>Quick Actions</CardTitle>
+                  <CardDescription>Common administrative tasks</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <Users className="h-4 w-4 mr-2" />
+                    Verify Pending Sellers ({metrics.pendingVerifications})
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <AlertTriangle className="h-4 w-4 mr-2" />
+                    Review Active Disputes ({metrics.activeDisputes})
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <FileText className="h-4 w-4 mr-2" />
+                    Generate Weekly Report
+                  </Button>
+                  <Button variant="outline" className="w-full justify-start bg-transparent">
+                    <Shield className="h-4 w-4 mr-2" />
+                    Update Security Policies
+                  </Button>
+                </CardContent>
+              </Card>
+
+              <Card className="lg:col-span-2">
+                <CardHeader>
+                  <CardTitle>Deployment Information</CardTitle>
+                  <CardDescription>Current deployment status</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="p-4 border border-border rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-1">Production URL</p>
+                      <p className="text-sm font-mono break-all">emapofpi.teosegypt.com</p>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="seller-verification"
-                        type="number"
-                        step="0.1"
-                        className="w-24"
-                        value={isEditing ? editedFees.SELLER_VERIFICATION : fees.SELLER_VERIFICATION}
-                        onChange={(e) =>
-                          setEditedFees((prev) => ({
-                            ...prev,
-                            SELLER_VERIFICATION: Number.parseFloat(e.target.value) || 0,
-                          }))
-                        }
-                        disabled={!isEditing}
-                      />
-                      <span className="text-sm text-muted-foreground">π</span>
+                    <div className="p-4 border border-border rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-1">Pi Network URL</p>
+                      <p className="text-sm font-mono break-all">emapofpi6390.pinet.com</p>
+                    </div>
+                    <div className="p-4 border border-border rounded-lg">
+                      <p className="text-sm text-muted-foreground mb-1">Vercel URL</p>
+                      <p className="text-sm font-mono break-all">elmahrosa-map-of-pi.vercel.app</p>
                     </div>
                   </div>
-
-                  <Separator />
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="premium-listing">{MARKETPLACE_FEES.PREMIUM_LISTING.name}</Label>
-                      <p className="text-sm text-muted-foreground">{MARKETPLACE_FEES.PREMIUM_LISTING.description}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="premium-listing"
-                        type="number"
-                        step="0.1"
-                        className="w-24"
-                        value={isEditing ? editedFees.PREMIUM_LISTING : fees.PREMIUM_LISTING}
-                        onChange={(e) =>
-                          setEditedFees((prev) => ({
-                            ...prev,
-                            PREMIUM_LISTING: Number.parseFloat(e.target.value) || 0,
-                          }))
-                        }
-                        disabled={!isEditing}
-                      />
-                      <span className="text-sm text-muted-foreground">π/mo</span>
-                    </div>
-                  </div>
-
-                  <Separator />
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label htmlFor="withdrawal-fee">{MARKETPLACE_FEES.WITHDRAWAL_FEE.name}</Label>
-                      <p className="text-sm text-muted-foreground">{MARKETPLACE_FEES.WITHDRAWAL_FEE.description}</p>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <Input
-                        id="withdrawal-fee"
-                        type="number"
-                        step="0.1"
-                        className="w-24"
-                        value={isEditing ? editedFees.WITHDRAWAL_FEE : fees.WITHDRAWAL_FEE}
-                        onChange={(e) =>
-                          setEditedFees((prev) => ({ ...prev, WITHDRAWAL_FEE: Number.parseFloat(e.target.value) || 0 }))
-                        }
-                        disabled={!isEditing}
-                      />
-                      <span className="text-sm text-muted-foreground">π</span>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
         </Tabs>
-      </div>
-    </div>
-  )
-}
+      </main>
 
-export default function FounderDashboard() {
-  return (
-    <LanguageProvider>
-      <FounderDashboardContent />
-    </LanguageProvider>
+      <Footer />
+    </div>
   )
 }
