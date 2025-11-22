@@ -1,116 +1,100 @@
 "use client"
 
 import { useLanguage } from "@/contexts/language-context"
-import Link from "next/link"
+import { Mail, Send } from "lucide-react"
 
-export function Footer() {
-  const { language } = useLanguage()
-
-  const content = {
-    en: {
-      company: "Company",
-      legal: "Legal",
-      support: "Support",
-      about: "About Elmahrosa",
-      founder: "Founder Dashboard",
-      privacy: "Privacy Policy",
-      terms: "Terms of Service",
-      contact: "Contact Us",
-      rights: "© 2025 Elmahrosa International. All rights reserved.",
-      domains: "Available at:",
-    },
-    ar: {
-      company: "الشركة",
-      legal: "قانوني",
-      support: "الدعم",
-      about: "عن المحروسة",
-      founder: "لوحة تحكم المؤسس",
-      privacy: "سياسة الخصوصية",
-      terms: "شروط الخدمة",
-      contact: "اتصل بنا",
-      rights: "© 2025 المحروسة الدولية. جميع الحقوق محفوظة.",
-      domains: "متاح على:",
-    },
-  }
-
-  const t = content[language]
+export default function Footer() {
+  const { t } = useLanguage()
 
   return (
-    <footer className="bg-card border-t border-border mt-auto">
-      <div className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-6">
+    <footer className="bg-secondary text-secondary-foreground py-12 border-t border-border">
+      <div className="container mx-auto px-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           <div>
-            <h3 className="font-semibold text-foreground mb-3">{t.company}</h3>
-            <ul className="space-y-2">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="w-10 h-10 rounded-full bg-primary flex items-center justify-center">
+                <span className="text-xl font-bold text-primary-foreground">π</span>
+              </div>
+              <span className="font-bold text-lg">EMAPOFPI</span>
+            </div>
+            <p className="text-sm text-secondary-foreground/80">
+              Official seller onboarding platform for Pi Network in Egypt, MENA, and Africa
+            </p>
+          </div>
+
+          <div>
+            <h4 className="font-semibold mb-4">{t("marketplace")}</h4>
+            <ul className="space-y-2 text-sm text-secondary-foreground/80">
               <li>
-                <Link href="/" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {t.about}
-                </Link>
+                <a href="#" className="hover:text-primary transition-colors">
+                  Browse Sellers
+                </a>
               </li>
               <li>
-                <Link href="/founder" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {t.founder}
-                </Link>
+                <a href="#" className="hover:text-primary transition-colors">
+                  Categories
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-primary transition-colors">
+                  Locations
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-primary transition-colors">
+                  Verified Badges
+                </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-3">{t.legal}</h3>
-            <ul className="space-y-2">
+            <h4 className="font-semibold mb-4">{t("for_sellers")}</h4>
+            <ul className="space-y-2 text-sm text-secondary-foreground/80">
               <li>
-                <Link href="/privacy" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {t.privacy}
-                </Link>
+                <a href="#" className="hover:text-primary transition-colors">
+                  Register Now
+                </a>
               </li>
               <li>
-                <Link href="/terms" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {t.terms}
-                </Link>
+                <a href="#" className="hover:text-primary transition-colors">
+                  Seller Dashboard
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-primary transition-colors">
+                  Pricing
+                </a>
+              </li>
+              <li>
+                <a href="#" className="hover:text-primary transition-colors">
+                  Support
+                </a>
               </li>
             </ul>
           </div>
 
           <div>
-            <h3 className="font-semibold text-foreground mb-3">{t.support}</h3>
-            <ul className="space-y-2">
-              <li>
-                <a
-                  href="mailto:support@elmahrosa.com"
-                  className="text-muted-foreground hover:text-foreground transition-colors"
-                >
-                  {t.contact}
+            <h4 className="font-semibold mb-4">Contact</h4>
+            <ul className="space-y-2 text-sm text-secondary-foreground/80">
+              <li className="flex items-center gap-2">
+                <Mail className="h-4 w-4" />
+                <span>support@elmahrosapi.com</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <Send className="h-4 w-4" />
+                <a href="https://t.me/Elmahrosapi" className="hover:text-primary transition-colors">
+                  @Elmahrosapi
                 </a>
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="border-t border-border pt-6">
-          <p className="text-sm text-muted-foreground text-center mb-3">{t.rights}</p>
-          <div className="text-sm text-muted-foreground text-center">
-            <p className="mb-1">{t.domains}</p>
-            <div className="flex flex-wrap justify-center gap-3">
-              <a
-                href="https://elmahrosa-map-of-pi-bj36.vercel.app"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-foreground transition-colors"
-              >
-                elmahrosa-map-of-pi-bj36.vercel.app
-              </a>
-              <span>•</span>
-              <a
-                href="https://elmahrosamapofpi4696.pinet.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-foreground transition-colors"
-              >
-                elmahrosamapofpi4696.pinet.com
-              </a>
-              <span>•</span>
-              <span className="hover:text-foreground transition-colors">EMAPOFPI.TEOSEGYPT.COM</span>
-            </div>
+        <div className="pt-8 border-t border-border/20">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-secondary-foreground/60">
+            <p>© 2025 EMAPOFPI - Built by TEOS Egypt & Elmahrosa International</p>
+            <p>Powered by Pi Network • MIT License</p>
           </div>
         </div>
       </div>
