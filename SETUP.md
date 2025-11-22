@@ -1,274 +1,115 @@
-# Setup Guide - Elmahrosa Map of Pi
+# EMAPOFPI Setup Guide
 
-Complete setup instructions for local development and production deployment.
+## Prerequisites
 
----
+1. **Node.js 18+** installed
+2. **Pi Network Developer Account** at [developers.minepi.com](https://developers.minepi.com)
+3. **Domain configured**: emapofpi.teosegypt.com
 
-## 🚀 Quick Start
+## Installation Steps
 
-### 1. Clone Repository
-
-\`\`\`bash
-git clone https://github.com/Elmahrosa/Elmahrosa-Map-of-PI.git
-cd Elmahrosa-Map-of-PI
-\`\`\`
-
-### 2. Install Dependencies
+### 1. Install Dependencies
 
 \`\`\`bash
-pnpm install
-# or
 npm install
-# or
-yarn install
+npm install @pinetwork-js/sdk
 \`\`\`
 
-### 3. Environment Setup
+### 2. Configure Environment Variables
+
+Create a `.env.local` file in the root directory:
+
+\`\`\`env
+# Get these from Pi Developer Portal
+PI_API_KEY=your_api_key_from_pi_portal
+PI_WALLET_PRIVATE_KEY=your_wallet_private_key
+NEXT_PUBLIC_PI_APP_ID=your_app_id_from_pi_portal
+
+# Your domain
+NEXT_PUBLIC_APP_URL=https://emapofpi.teosegypt.com
+\`\`\`
+
+### 3. Pi Developer Portal Configuration
+
+1. Go to [developers.minepi.com](https://developers.minepi.com)
+2. Create or select your app
+3. Navigate to **App Configuration**
+4. Add these settings:
+   - **App Name**: EMAPOFPI
+   - **App URL**: `https://emapofpi.teosegypt.com`
+   - **Validation Key**: Upload `public/validation-key.txt`
+   - **Permissions**: `username`, `payments`
+
+### 4. Domain Verification
+
+1. Deploy your app to make `validation-key.txt` accessible
+2. In Pi Developer Portal, click **Verify Domain**
+3. Wait for verification (may take a few minutes)
+
+### 5. Run Development Server
 
 \`\`\`bash
-# Copy example environment file
-cp .env.example .env.local
-
-# Edit .env.local with your credentials
+npm run dev
 \`\`\`
 
-### 4. Run Development Server
+Visit `http://localhost:3000` to test locally.
+
+### 6. Deploy to Production
+
+**Using Vercel:**
 
 \`\`\`bash
-pnpm dev
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+
+# Add custom domain
+vercel domains add emapofpi.teosegypt.com
 \`\`\`
 
-Visit `http://localhost:3000`
+**Environment Variables in Vercel:**
 
----
+Add these in Vercel Dashboard → Settings → Environment Variables:
+- `PI_API_KEY`
+- `PI_WALLET_PRIVATE_KEY`
+- `NEXT_PUBLIC_PI_APP_ID`
+- `NEXT_PUBLIC_APP_URL`
 
-## 🔐 Authentication Setup
+### 7. Test in Pi Browser
 
-### Option 1: Supabase (Recommended for Production)
+1. Open Pi Browser app on mobile
+2. Navigate to your app URL
+3. Test authentication flow
+4. Test payment creation
 
-1. **Create Supabase Project**
-   - Go to [supabase.com](https://supabase.com)
-   - Create new project
-   - Copy project URL and anon key
+## API Endpoints
 
-2. **Configure Environment Variables**
-   \`\`\`env
-   NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
-   SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
-   NEXT_PUBLIC_ENABLE_SUPABASE_AUTH=true
-   \`\`\`
+All API routes are in `app/api/`:
+- `/api/escrow/*` - Escrow management
+- `/api/trust/score` - Trust scoring
+- `/api/petition-ai` - AI petition generator
+- `/api/compliance-bot` - Compliance checker
+- `/api/treasury-auditor` - Treasury auditing
 
-3. **Run Database Migration**
-   - Go to Supabase SQL Editor
-   - Copy contents of `scripts/001_create_auth_tables.sql`
-   - Execute the script
+## Troubleshooting
 
-4. **Create Founder Account**
-   \`\`\`sql
-   -- In Supabase SQL Editor
-   INSERT INTO auth.users (email, encrypted_password)
-   VALUES ('founder@elmahrosa.com', crypt('your_password', gen_salt('bf')));
-   
-   INSERT INTO profiles (id, email, role)
-   VALUES (
-     (SELECT id FROM auth.users WHERE email = 'founder@elmahrosa.com'),
-     'founder@elmahrosa.com',
-     'founder'
-   );
-   \`\`\`
+**Pi SDK not found:**
+- Ensure you're testing in Pi Browser, not regular browser
+- Check `window.Pi` is available in browser console
 
-### Option 2: Simple Password (Development Only)
+**Domain verification fails:**
+- Ensure `validation-key.txt` is accessible
+- Check DNS records point to your hosting
+- Wait 5-10 minutes for DNS propagation
 
-1. **Set Environment Variable**
-   \`\`\`env
-   FOUNDER_PASSWORD=your_secure_password
-   NEXT_PUBLIC_ENABLE_SUPABASE_AUTH=false
-   \`\`\`
+**Authentication errors:**
+- Verify `NEXT_PUBLIC_PI_APP_ID` matches Pi Portal
+- Check app is approved in Pi Developer Portal
+- Ensure permissions are configured correctly
 
-2. **Access Dashboard**
-   - Navigate to `/founder`
-   - Enter the password from `FOUNDER_PASSWORD`
+## Support
 
----
-
-## 💰 Fee Management Setup
-
-Fees are configured in `lib/fees.ts` and can be modified through the Founder Dashboard.
-
-### Default Fee Structure
-
-- **NFT Minting:** 1.5π (fixed)
-- **Trade Commission:** 3.5% (percentage)
-- **Seller Verification:** 2.0π (fixed)
-- **Premium Listing:** 5.0π/month (fixed)
-- **Withdrawal:** 1.0% (percentage)
-
-### Updating Fees
-
-1. **Via Founder Dashboard** (Recommended)
-   - Login to `/founder`
-   - Navigate to "Fee Settings" tab
-   - Click "Edit Fees"
-   - Update values and save
-
-2. **Via Database** (Advanced)
-   \`\`\`sql
-   UPDATE current_fees
-   SET amount = 2.0
-   WHERE fee_type = 'NFT_MINTING';
-   \`\`\`
-
-3. **Via Code** (Initial Setup)
-   - Edit values in `lib/fees.ts`
-   - Changes apply to new installations
-
----
-
-## 🗺️ Pi Network SDK Setup
-
-1. **Register Application**
-   - Go to [Pi Developer Portal](https://developers.minepi.com)
-   - Create new application
-   - Copy API credentials
-
-2. **Configure Environment**
-   \`\`\`env
-   NEXT_PUBLIC_PI_API_KEY=your_api_key
-   PI_API_SECRET=your_api_secret
-   NEXT_PUBLIC_ENABLE_PI_SDK=true
-   \`\`\`
-
-3. **Test Connection**
-   - Open homepage
-   - Click "Connect Pi Wallet"
-   - Authenticate with Pi Browser
-
----
-
-## 📊 Database Schema
-
-Required tables are created by `scripts/001_create_auth_tables.sql`:
-
-- **profiles** - User accounts with roles
-- **current_fees** - Active marketplace fees
-- **fee_history** - Audit trail of fee changes
-
-### Manual Database Setup
-
-If not using Supabase, create these tables in your PostgreSQL database:
-
-\`\`\`bash
-# Using psql
-psql -U your_user -d your_database -f scripts/001_create_auth_tables.sql
-\`\`\`
-
----
-
-## 🚢 Deployment
-
-### Vercel (Recommended)
-
-1. **Connect Repository**
-   - Go to [vercel.com](https://vercel.com)
-   - Import GitHub repository
-   - Configure project
-
-2. **Add Environment Variables**
-   - Go to Project Settings → Environment Variables
-   - Add all variables from `.env.example`
-   - Save and redeploy
-
-3. **Configure Domains**
-   - Add custom domain (optional)
-   - Enable HTTPS
-
-### Manual Deployment
-
-\`\`\`bash
-# Build for production
-pnpm build
-
-# Start production server
-pnpm start
-\`\`\`
-
----
-
-## 🧪 Testing
-
-### Test Founder Dashboard
-
-1. Navigate to `/founder`
-2. Login with credentials
-3. Verify fee management works
-4. Check stats display correctly
-
-### Test Authentication
-
-1. Create test seller account
-2. Verify email/password login
-3. Check role-based access control
-
-### Test Pi SDK Integration
-
-1. Open in Pi Browser
-2. Connect wallet
-3. Test payment flow
-
----
-
-## 🐛 Troubleshooting
-
-### Build Errors
-
-**Missing gsap package:**
-\`\`\`bash
-pnpm add gsap
-\`\`\`
-
-**Supabase connection failed:**
-- Check environment variables
-- Verify Supabase project is active
-- Check network connectivity
-
-### Authentication Issues
-
-**Cannot login as founder:**
-- Verify `FOUNDER_PASSWORD` in `.env.local`
-- Check Supabase user role is 'founder'
-- Clear browser cache
-
-**Database errors:**
-- Run migration script again
-- Check RLS policies are enabled
-- Verify service role key has admin access
-
-### Pi SDK Issues
-
-**Wallet not connecting:**
-- Must use Pi Browser app
-- Check API credentials are correct
-- Verify app is approved in Pi Developer Portal
-
----
-
-## 📞 Support
-
-- **Email:** support@elmahrosa.com
-- **GitHub Issues:** [Report Bug](https://github.com/Elmahrosa/Elmahrosa-Map-of-PI/issues)
-- **Documentation:** [View Roadmap](./roadmap.md)
-
----
-
-## 🔒 Security Notes
-
-- Never commit `.env.local` to git
-- Use strong passwords for founder account
-- Enable 2FA on Supabase
-- Rotate API keys regularly
-- Monitor fee history for unauthorized changes
-
----
-
-**Ready to launch!** Once setup is complete, push to GitHub and your app will auto-deploy on Vercel.
+- Pi Network Docs: [https://developers.minepi.com/doc](https://developers.minepi.com/doc)
+- EMAPOFPI Issues: Contact founder via dashboard
