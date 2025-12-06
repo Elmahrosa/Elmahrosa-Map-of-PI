@@ -1,6 +1,7 @@
 # Elmahrosa Map of Pi — Founder Upgrade
 
-Official seller onboarding platform for Pi Network in Egypt, MENA, and Africa
+Official seller onboarding platform for Pi Network in Egypt, MENA, and Africa “Part of the TEOS Egypt Blockchain Ecosystem — a unified civil, financial, and smart-city infrastructure powering digital banking, civic governance, DeFi, Pi integration, and national blockchain services.”
+
 
 ## Mission and Scope
 
